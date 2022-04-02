@@ -1,43 +1,34 @@
-//
-//  ContentView.swift
-//  Shared
-//
-//  Created by Saxon Dean on 31/3/22.
-//
-
 import SwiftUI
+import Combine
 
 struct ContentView: View {
+    @ObservedObject var tasklist = TaskList()
+    @State var newTask : String = ""
+    
+    var searchBar : some View {
+        HStack {
+            TextField("Enter in a new task", text: self.$newTask)
+            Button(action: self.addTask, label: {
+                Text("Add New Task")
+            })
+        }
+    }
+    
+    func addTask() {
+        tasklist.tasks.append(Task(id: String(tasklist.tasks.count + 1), Item: newTask))
+        self.newTask = ""
+        //Add auto generated id in the future.
+    }
+    
     var body: some View {
-        //Call detail view functions
-        let itemList = listOfItems()
-        let checkList = listOfBools()
-        
-        //Build list view
         NavigationView {
-            //List the strings
-            VStack{
-                //change for loop to ForEach loop
-                for i in itemList {
-                    HStack {
-                        Text(i)
+            VStack {
+                searchBar.padding()
+                List {
+                    ForEach(self.tasklist.tasks) { task in
+                        Text(task.Item)
                     }
-                }
-            }
-            //List the check boxes
-            VStack{
-                //change for loop to ForEach loop
-                for c in checkList {
-                    HStack {
-                        //Check if the box should be ticked
-                        if i = true {
-                            Image("activeTick")
-                        }
-                        else {
-                            Image("inactiveTick")
-                        }
-                    }
-                }
+                }.navigationBarTitle("Tasks")
             }
         }
     }
